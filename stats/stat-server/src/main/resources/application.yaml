@@ -1,6 +1,6 @@
 spring:
   application:
-    name: main-service
+    name: stat-service
   cloud:
     config:
       discovery:
