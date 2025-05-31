@@ -19,3 +19,6 @@ eureka:
     instance-id: ${spring.application.name}:${random.int}
     prefer-ip-address: true
     hostname: localhost
+
+stat-server:
+  url: ${STATS_SERVER_URL}

@@ -24,5 +24,4 @@ logging:
         transaction: INFO
         transaction.interceptor: TRACE
 
-stat-server:
-  url: ${STATS_SERVER_URL}
+
