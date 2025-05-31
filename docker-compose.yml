@@ -1,14 +1,34 @@
+version: '3.8'
+
 services:
   stats-server:
+    build: ./stats-server
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db
 
   stats-db:
     image: postgres:16.1
+    environment:
+      POSTGRES_DB: statsdb
+      POSTGRES_USER: statsuser
+      POSTGRES_PASSWORD: statspass
+    ports:
+      - "5433:5432"
 
   ewm-service:
+    build: ./ewm-service
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
 
   ewm-db:
     image: postgres:16.1
+    environment:
+      POSTGRES_DB: ewmdb
+      POSTGRES_USER: ewmuser
+      POSTGRES_PASSWORD: ewmpass
+    ports:
+      - "5432:5432"
