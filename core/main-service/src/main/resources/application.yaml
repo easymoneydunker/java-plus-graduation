@@ -21,4 +21,4 @@ eureka:
     hostname: localhost
 
 stat-server:
-  url: ${STATS_SERVER_URL}
+  url: stat-service
