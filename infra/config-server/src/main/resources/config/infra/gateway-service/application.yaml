@@ -25,7 +25,17 @@ spring:
 management:
   endpoint:
     gateway:
-      enabled: true # default value  endpoints:
+      enabled: true
+  endpoints:
     web:
       exposure:
-        include: gateway
+        include: gateway, health, info
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.actuate.endpoint.web.servlet: DEBUG
+    org.springframework.boot.actuate: DEBUG
+    reactor.netty: DEBUG
