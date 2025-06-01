@@ -23,10 +23,9 @@ spring:
             - Path=/stats/**
 
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
   endpoint:
     gateway:
-      enabled: true
+      enabled: true # default value  endpoints:
+    web:
+      exposure:
+        include: gateway
