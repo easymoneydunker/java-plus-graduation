@@ -2,6 +2,7 @@ package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,6 +24,7 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    @Qualifier("userMapper")
     private final UserMapper mapper;
 
     @Override
@@ -69,8 +72,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getOrThrow(Long id) {
-        var user = repository.findById(id);
-        if (user.isEmpty()) {
+        Optional<User> user = repository.findById(id);
+        if (!user.isPresent()) {
             throw new NotFoundException("User not found.");
         }
         return user.get();

@@ -9,6 +9,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.service.CategoriesService;
@@ -41,7 +43,9 @@ public class EventServiceImpl implements EventService {
     private final RequestService requestService;
     private final EventRepository eventRepository;
     private final LocationRepository locationRepository;
+    @Qualifier("eventMapper")
     private final EventMapper mapper;
+    @Qualifier("reqMapper")
     private final ReqMapper requestMapper;
     private final UserService userService;
     private final CategoriesService categoryService;
@@ -52,7 +56,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> getAllByUserId(Long userId, int from, int size) {
-        var pageable = PageableBuilder.getPageable(from, size, "id");
+        PageRequest pageable = PageableBuilder.getPageable(from, size, "id");
         return eventRepository.findAllByUserId(userId, pageable).getContent().stream().map(mapper::toShortDto).toList();
     }
 
@@ -93,7 +97,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdAndUser_Id(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " was not found"));
 
-        var updateBuilder = event.toBuilder();
+        Event.EventBuilder updateBuilder = event.toBuilder();
 
         if (event.getState() == EventState.PUBLISHED) {
             throw new ConflictException("Only pending or canceled events can be changed");
@@ -282,7 +286,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        var page = from / size;
+        int page = from / size;
         assertDataValid(rangeStart, rangeEnd);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);

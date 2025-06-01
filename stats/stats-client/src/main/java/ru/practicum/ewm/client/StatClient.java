@@ -31,15 +31,17 @@ public class StatClient {
                                     String end,
                                     List<String> uris,
                                     Boolean unique) {
-            return restClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/stats")
-                            .queryParam("start", start)
-                            .queryParam("end", end)
-                            .queryParam("uris", uris)
-                            .queryParam("unique", unique)
-                            .build())
-                    .retrieve().body(new ParameterizedTypeReference<>() {
-                    });
+        return restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/stats")
+                        .queryParam("start", start)
+                        .queryParam("end", end)
+                        .queryParam("uris", uris)
+                        .queryParam("unique", unique)
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<ViewStats>>() {
+                });
     }
+
 }
