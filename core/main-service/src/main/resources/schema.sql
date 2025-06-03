@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS compilation_event CASCADE;
 DROP TABLE IF EXISTS compilation CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 
-
 CREATE TABLE IF NOT EXISTS location
 (
     id
@@ -112,8 +111,8 @@ CREATE TABLE IF NOT EXISTS event
 (
     120
 ),
-    annotation Text,
-    description Text,
+    annotation TEXT,
+    description TEXT,
     confirmed_requests INTEGER NOT NULL,
     participant_limit INTEGER NOT NULL,
     request_moderation BOOLEAN NOT NULL,
@@ -216,12 +215,12 @@ CREATE TABLE IF NOT EXISTS request
     NULL
     CONSTRAINT
     request_event_id_fk
-    references
+    REFERENCES
     event
 (
     id
 ),
-    requester_id BIGINT NOT NULL CONSTRAINT request_users_id_fk references users
+    requester_id BIGINT NOT NULL CONSTRAINT request_users_id_fk REFERENCES users
 (
     id
 ),
@@ -235,14 +234,14 @@ CREATE TABLE IF NOT EXISTS request
 )
     );
 
-CREATE INDEX IF NOT EXISTS ix_request_on_requester_id on request (requester_id);
-CREATE INDEX IF NOT EXISTS ix_request_on_event_id on request (event_id);
-CREATE INDEX IF NOT EXISTS ix_request_on_status on request (status);
+CREATE INDEX IF NOT EXISTS ix_request_on_requester_id ON request (requester_id);
+CREATE INDEX IF NOT EXISTS ix_request_on_event_id ON request (event_id);
+CREATE INDEX IF NOT EXISTS ix_request_on_status ON request (status);
 
 CREATE TABLE IF NOT EXISTS compilation
 (
     id
-    bigint
+    BIGINT
     GENERATED
     BY
     DEFAULT AS
@@ -264,7 +263,7 @@ CREATE TABLE IF NOT EXISTS compilation
 )
     );
 
-CREATE INDEX IF NOT EXISTS ix_compilation_on_pinned on compilation (pinned);
+CREATE INDEX IF NOT EXISTS ix_compilation_on_pinned ON compilation (pinned);
 
 CREATE TABLE IF NOT EXISTS compilation_event
 (
@@ -299,7 +298,7 @@ CREATE TABLE IF NOT EXISTS compilation_event
   ON DELETE CASCADE
     );
 
-CREATE TABLE if not exists comments
+CREATE TABLE IF NOT EXISTS comments
 (
     id
     BIGINT
@@ -319,12 +318,12 @@ CREATE TABLE if not exists comments
     event
 (
     id
-) on delete cascade,
+) ON DELETE CASCADE,
     author_id BIGINT REFERENCES users
 (
     id
 )
-  on delete cascade,
+  ON DELETE CASCADE,
     created_on TIMESTAMP
   WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY

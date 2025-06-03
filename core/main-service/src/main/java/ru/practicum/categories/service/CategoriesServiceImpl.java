@@ -52,7 +52,7 @@ public class CategoriesServiceImpl implements CategoriesService {
     private void assertUniqueName(NewCategoryDto updateCategoryDto, Category category) {
         categoriesRepository.findByName(updateCategoryDto.getName())
                 .ifPresent(cat -> {
-                    if (category == null || !Objects.equals(cat.getId(), category.getId())) {
+                    if (Objects.isNull(category) || !Objects.equals(cat.getId(), category.getId())) {
                         throw new ConflictException("Category with name {" +
                                 updateCategoryDto.getName() +
                                 "} already exist.");
