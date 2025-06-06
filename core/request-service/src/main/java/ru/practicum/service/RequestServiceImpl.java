@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Request already exist");
         }
 
-        if (event.getInitiator().getId().equals(user.getId())) {
+        if (event.getInitiatorId().equals(user.getId())) {
             throw new ConflictException("Request can't be created by initiator");
         }
 
@@ -99,7 +99,7 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestDto> getRequests(long userId, long eventId) {
         EventFullDto event = findEventById(eventId);
 
-        if (!event.getInitiator().getId().equals(userId)) {
+        if (!event.getInitiatorId().equals(userId)) {
             throw new NotFoundException("User is not the owner of the event");
         }
 
@@ -112,7 +112,7 @@ public class RequestServiceImpl implements RequestService {
                                                                         List<Long> requestIds) {
         EventFullDto event = eventClient.getPublicEventById(eventId);
 
-        if (!event.getInitiator().getId().equals(userId)) {
+        if (!event.getInitiatorId().equals(userId)) {
             throw new NotFoundException("User is not the owner of the event");
         }
 
@@ -137,7 +137,7 @@ public class RequestServiceImpl implements RequestService {
         int notConfirmedReq = requestEntities.size() - confirmedReq;
         int confirmedRequests = currentConfirmedRequests + confirmedReq - notConfirmedReq;
         event.setConfirmedRequests(confirmedRequests);
-        eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
+        eventClient.updateUserEvent(event.getInitiatorId(), event.getId(), eventMapper.toUpdateRequest(event));
         List<Request> savedRequests = requestRepository.saveAllAndFlush(requestEntities);
 
         return savedRequests.stream().map(requestMapper::toDto).collect(Collectors.toList());
