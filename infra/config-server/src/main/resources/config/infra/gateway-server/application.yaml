@@ -8,50 +8,30 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: public_categories_route
-          uri: lb://main-service
-          predicates:
-            - Path=/categories/**
-        - id: admin_categories_route
-          uri: lb://main-service
-          predicates:
-            - Path=/admin/categories/**
-        - id: admin_comments_route
-          uri: lb://main-service
-          predicates:
-            - Path=/admin/comments/**
-        - id: private_comments_route
-          uri: lb://main-service
-          predicates:
-            - Path=/users/{userId}/comments/**
-        - id: admin_compilations_route
-          uri: lb://main-service
-          predicates:
-            - Path=/admin/compilations/**
-        - id: public_compilations_route
-          uri: lb://main-service
-          predicates:
-            - Path=/compilations/**
-        - id: admin_events_route
-          uri: lb://main-service
-          predicates:
-            - Path=/admin/events/**
-        - id: private_events_route
-          uri: lb://main-service
-          predicates:
-            - Path=/users/{userId}/events/**
-        - id: public_events_route
-          uri: lb://main-service
-          predicates:
-            - Path=/events/**
-        - id: private_request_route
-          uri: lb://main-service
-          predicates:
-            - Path=/users/{userId}/**
-        - id: admin_users_route
-          uri: lb://main-service
+        - id: user-service
+          uri: lb://user-service
           predicates:
             - Path=/admin/users/**
+        - id: comment-service
+          uri: lb://comment-service
+          predicates:
+            - Path=/users/*/events/*/comments/**, /events/*/comments/**
+        - id: request-service
+          uri: lb://request-service
+          predicates:
+            - Path=/users/*/requests/**, /requests/**
+        - id: stats-server
+          uri: lb://stats-server
+          predicates:
+            - Path=/hit/**, /stats/**
+        - id: event-service
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/**, /users/*/events/**, /users/*/events/*/requests/**, /events/**
+        - id: main-service
+          uri: lb://main-service
+          predicates:
+            - Path=/categories/**, /admin/categories/**, /admin/compilations/**, /compilations/**
 
 
 management:
