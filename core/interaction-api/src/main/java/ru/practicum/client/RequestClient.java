@@ -11,18 +11,19 @@ import java.util.List;
 public interface RequestClient {
     @GetMapping
     List<RequestDto> getRequests(@PathVariable long userId,
-                                 @RequestParam(required = false) long eventId);
+                                 @RequestParam(required = false) Long eventId);
 
-    @GetMapping("/users/{userId}/requests/event")
+    @GetMapping("/event")
     List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIdIn(@PathVariable long userId,
                                                                  @RequestParam long eventId,
                                                                  @RequestParam List<Long> requestIds);
 
-    @GetMapping("/users/{userId}/requests/confirmed")
+    @GetMapping("/confirmed")
     List<RequestDto> getConfirmedRequests(@PathVariable long userId,
                                           @RequestParam long eventId,
-                                          RequestStatus requestStatus);
+                                          @RequestParam RequestStatus requestStatus);
 
     @PutMapping
-    List<RequestDto> saveAll(@RequestBody List<RequestDto> requestDtoList);
+    List<RequestDto> saveAll(@PathVariable long userId,
+                             @RequestBody List<RequestDto> requestDtoList);
 }

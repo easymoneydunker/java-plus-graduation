@@ -10,13 +10,13 @@ import java.util.List;
 @FeignClient(name = "user-service", path = "/admin/users")
 public interface UserClient {
 
-    @GetMapping("/admin/users/multiple")
+    @GetMapping("/multiple")
     List<UserDto> getUsers(@RequestParam(value = "ids", required = false) List<Long> ids,
                            @RequestParam(value = "from", defaultValue = "0") Integer from,
                            @RequestParam(value = "size", defaultValue = "10") Integer size);
 
     @GetMapping
-    UserDto getUser(@RequestParam(value = "id") Long id);
+    UserDto getUser(@RequestParam(value = "id", required = false) Long id);
 
     @PostMapping
     UserDto registerUser(@RequestBody UserRequestDto userRequestDto);
