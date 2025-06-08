@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "location")
+@Table(name = "location", schema = "event")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Location {

@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "event")
+@Table(name = "event", schema = "event")
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

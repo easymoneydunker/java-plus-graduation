@@ -5,7 +5,7 @@ import lombok.*;
 import ru.practicum.event.model.Event;
 
 @Entity
-@Table(name = "compilation_event")
+@Table(name = "compilation_event", schema = "event")
 @Getter
 @Setter
 @Builder
