@@ -19,7 +19,7 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public void createStats(String uri, String ip) {
-        log.info("Creat stats for URI: {}, IP: {}", uri, ip);
+        log.info("Create stats for URI: {}, IP: {}", uri, ip);
         EndpointHit hitDto = EndpointHit.builder()
                 .uri(uri)
                 .ip(ip)

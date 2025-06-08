@@ -1,6 +1,7 @@
 package ru.practicum.stat.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.practicum.stat.dto.EndpointHit;
 import ru.practicum.stat.dto.ViewStats;
@@ -17,7 +18,7 @@ public class StatsServiceImpl implements StatsService {
     private final EndpointHitMapper mapper;
 
     @Autowired
-    public StatsServiceImpl(EndpointHitEntityRepository repository, EndpointHitMapper mapper) {
+    public StatsServiceImpl(EndpointHitEntityRepository repository, @Qualifier("endpointHitMapperImpl") EndpointHitMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
