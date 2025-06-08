@@ -23,7 +23,7 @@ public interface RequestClient {
                                           @RequestParam long eventId,
                                           @RequestParam RequestStatus requestStatus);
 
-    @PutMapping(consumes = "application/json")
+    @PutMapping
     List<RequestDto> saveAll(@PathVariable("userId") long userId,
                              @RequestBody List<RequestDto> requestDtoList);
 }

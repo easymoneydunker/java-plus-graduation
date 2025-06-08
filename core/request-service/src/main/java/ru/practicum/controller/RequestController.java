@@ -55,7 +55,7 @@ public class RequestController {
     @GetMapping("/confirmed")
     List<RequestDto> getConfirmedRequests(@PathVariable long userId,
                                           @RequestParam long eventId,
-                                          RequestStatus requestStatus) {
+                                          @RequestParam RequestStatus requestStatus) {
         return requestService.getConfirmedRequests(eventId, requestStatus);
     }
 
