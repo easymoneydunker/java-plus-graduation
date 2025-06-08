@@ -24,6 +24,6 @@ public interface RequestClient {
                                           @RequestParam RequestStatus requestStatus);
 
     @PutMapping(consumes = "application/json")
-    List<RequestDto> saveAll(@PathVariable long userId,
+    List<RequestDto> saveAll(@PathVariable("userId") long userId,
                              @RequestBody List<RequestDto> requestDtoList);
 }
