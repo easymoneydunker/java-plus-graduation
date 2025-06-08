@@ -22,17 +22,17 @@ import java.util.List;
 public class AdminUserController {
     private final UserService service;
 
-    @GetMapping("/multiple")
+    @GetMapping
     public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
         return service.getUsers(ids, from, size);
     }
 
-    @GetMapping
-    public UserDto getUser(@RequestParam(required = false) Long id) {
-        return service.getUser(id);
-    }
+//    @GetMapping
+//    public UserDto getUser(@RequestParam(required = false) Long id) {
+//        return service.getUser(id);
+//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
