@@ -11,32 +11,48 @@ spring:
         - id: user-service
           uri: lb://user-service
           predicates:
+            - Path=/admin/users
             - Path=/admin/users/**
         - id: comment-service
           uri: lb://comment-service
           predicates:
-            - Path=/users/*/events/*/comments/**, /events/*/comments/**
+            - Path=/users/*/events/*/comments
+            - Path=/users/*/events/*/comments/**
+            - Path=/events/*/comments
+            - Path=/events/*/comments/**
         - id: request-service
           uri: lb://request-service
           predicates:
-            - Path=/users/*/requests/**, /requests/**
+            - Path=/users/*/requests
+            - Path=/users/*/requests/**
+            - Path=/requests
+            - Path=/requests/**
         - id: stats-server
           uri: lb://stats-server
           predicates:
-            - Path=/hit/**, /stats/**
+            - Path=/hit
+            - Path=/hit/**
+            - Path=/stats
+            - Path=/stats/**
         - id: event-service
           uri: lb://event-service
           predicates:
+            - Path=/admin/events
             - Path=/admin/events/**
+            - Path=/users/*/events
             - Path=/users/*/events/**
+            - Path=/users/*/events/*/requests
             - Path=/users/*/events/*/requests/**
+            - Path=/events
             - Path=/events/**
+            - Path=/categories
             - Path=/categories/**
+            - Path=/admin/categories
             - Path=/admin/categories/**
+            - Path=/admin/compilations
             - Path=/admin/compilations/**
+            - Path=/compilations
             - Path=/compilations/**
-
-
 management:
   endpoint:
     gateway:
