@@ -40,8 +40,7 @@ public class RequestController {
     }
 
     @PutMapping
-    public List<RequestDto> saveAll(@PathVariable long userId,
-                                    @RequestBody List<RequestDto> requestDtoList) {
+    public List<RequestDto> saveAll(@RequestBody List<RequestDto> requestDtoList) {
         return requestService.saveAll(requestDtoList);
     }
 

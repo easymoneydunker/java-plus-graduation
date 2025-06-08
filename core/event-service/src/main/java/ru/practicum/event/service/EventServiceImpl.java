@@ -179,7 +179,7 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        requestClient.saveAll(userId, requests);
+        requestClient.saveAll(requests);
 
         return EventRequestStatusUpdateResult.builder()
                 .confirmedRequests(confirmedRequests).rejectedRequests(rejectedRequests).build();
