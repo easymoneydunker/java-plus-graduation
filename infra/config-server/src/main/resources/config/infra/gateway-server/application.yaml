@@ -2,6 +2,10 @@ server:
   port: 8080
 
 spring:
+  webflux:
+    resources:
+      add-mappings: false
+
   cloud:
     gateway:
       discovery:
