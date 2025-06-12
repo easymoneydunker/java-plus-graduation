@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.dto.categories.CategoryDto;
+import ru.practicum.dto.user.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +24,7 @@ public class EventFullDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Long id;
-    private Long initiatorId;
+    private UserDto initiator;
     private Location location;
     private boolean paid;
     private Integer participantLimit = 0;

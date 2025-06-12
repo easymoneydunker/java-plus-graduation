@@ -16,7 +16,6 @@ public interface EventMapper {
     @Mapping(target = "createdOn", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "publishedOn", ignore = true)
     @Mapping(target = "views", ignore = true)
-    @Mapping(target = "initiatorId", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(source = "eventDate", target = "eventDate")
     @Mapping(source = "annotation", target = "annotation")

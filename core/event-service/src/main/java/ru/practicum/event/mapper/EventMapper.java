@@ -1,6 +1,7 @@
 package ru.practicum.event.mapper;
 
 import org.mapstruct.*;
+import ru.practicum.client.UserClient;
 import ru.practicum.dto.event.*;
 import ru.practicum.event.model.Event;
 
@@ -11,9 +12,12 @@ public interface EventMapper {
     @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
     EventShortDto toShortDto(Event event);
 
-    @Mapping(target = "initiatorId", source = "userId")
+    @Mapping(
+            target = "initiator",
+            expression = "java(userClient.getUser(event.getUserId()))"
+    )
     @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
-    EventFullDto toFullDto(Event event);
+    EventFullDto toFullDto(Event event, @Context UserClient userClient);
 
     @Mapping(target = "category.id", source = "category")
     @Mapping(target = "createdOn", expression = "java(java.time.LocalDateTime.now())")
@@ -35,7 +39,7 @@ public interface EventMapper {
     @Mapping(target = "createdOn", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "publishedOn", ignore = true)
     @Mapping(target = "views", ignore = true)
-    @Mapping(target = "initiatorId", ignore = true)
+    @Mapping(target = "initiator", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(source = "eventDate", target = "eventDate")
     @Mapping(source = "annotation", target = "annotation")

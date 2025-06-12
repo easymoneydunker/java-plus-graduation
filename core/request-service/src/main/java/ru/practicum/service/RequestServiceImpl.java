@@ -58,7 +58,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Request already exist");
         }
 
-        if (event.getInitiatorId().equals(user.getId())) {
+        if (event.getInitiator().getId().equals(user.getId())) {
             log.warn("User {} is the event initiator, cannot create request", userId);
             throw new ConflictException("Request can't be created by initiator");
         }
@@ -132,7 +132,7 @@ public class RequestServiceImpl implements RequestService {
         log.info("Fetching requests for eventId={} initiated by userId={}", eventId, userId);
         EventFullDto event = findEventById(eventId);
 
-        if (!event.getInitiatorId().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             log.warn("User {} is not the owner of event {}", userId, eventId);
             throw new NotFoundException("User is not the owner of the event");
         }
@@ -149,7 +149,7 @@ public class RequestServiceImpl implements RequestService {
         log.info("Fetching requests by userId={}, eventId={} and requestIds={}", userId, eventId, requestIds);
         EventFullDto event = eventClient.getPublicEventById(eventId);
 
-        if (!event.getInitiatorId().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             log.warn("User {} is not the owner of event {}", userId, eventId);
             throw new NotFoundException("User is not the owner of the event");
         }
@@ -179,7 +179,7 @@ public class RequestServiceImpl implements RequestService {
         int confirmedRequests = currentConfirmedRequests + confirmedReq - notConfirmedReq;
 
         event.setConfirmedRequests(confirmedRequests);
-        eventClient.updateUserEvent(event.getInitiatorId(), event.getId(), eventMapper.toUpdateRequest(event));
+        eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
 
         List<Request> savedRequests = requestRepository.saveAllAndFlush(requestEntities);
         List<RequestDto> result = savedRequests.stream().map(requestMapper::toDto).collect(Collectors.toList());

@@ -29,10 +29,10 @@ public class AdminUserController {
         return service.getUsers(ids, from, size);
     }
 
-//    @GetMapping
-//    public UserDto getUser(@RequestParam(required = false) Long id) {
-//        return service.getUser(id);
-//    }
+    @GetMapping
+    public UserDto getUser(@RequestParam(required = false) Long id) {
+        return service.getUser(id);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

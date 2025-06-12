@@ -78,7 +78,7 @@ public class EventServiceImpl implements EventService {
         event.setUserId(userId);
         event = eventRepository.save(event);
 
-        return mapper.toFullDto(event);
+        return mapper.toFullDto(event, userClient);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEvent(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndUserId(eventId, userId).orElseThrow(() -> new NotFoundException(
                 "Event with id " + eventId + " and user id " + userId + " was not found"));
-        return mapper.toFullDto(event);
+        return mapper.toFullDto(event, userClient);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class EventServiceImpl implements EventService {
 
         event = updateBuilder.build();
 
-        return mapper.toFullDto(eventRepository.saveAndFlush(event));
+        return mapper.toFullDto(eventRepository.saveAndFlush(event), userClient);
     }
 
     @Override
@@ -281,7 +281,7 @@ public class EventServiceImpl implements EventService {
                         "Event with id " + id + " not found or not published"));
         eventRepository.saveAndFlush(event);
         viewService.register(event, request);
-        return mapper.toFullDto(event);
+        return mapper.toFullDto(event, userClient);
     }
 
     @Override
@@ -319,7 +319,7 @@ public class EventServiceImpl implements EventService {
         query.setFirstResult(page * size);
         query.setMaxResults(size);
 
-        return query.getResultList().stream().map(mapper::toFullDto).toList();
+        return query.getResultList().stream().map((Event ev) -> mapper.toFullDto(ev, userClient)).toList();
     }
 
     @Override
@@ -338,7 +338,7 @@ public class EventServiceImpl implements EventService {
         mapper.updateFromAdminRequest(request, event);
         event.setState(request.getStateAction() == StateAction.PUBLISH_EVENT ? EventState.PUBLISHED :
                 EventState.CANCELED);
-        return mapper.toFullDto(eventRepository.save(event));
+        return mapper.toFullDto(eventRepository.save(event), userClient);
     }
 
     @Override
