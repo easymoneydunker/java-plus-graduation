@@ -44,6 +44,12 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestDto createRequest(long userId, long eventId) {
         log.info("Creating request for userId={} and eventId={}", userId, eventId);
+
+        if (eventId == 0) {
+            log.error("Event id is zero");
+            throw new ConflictException("Event id is zero");
+        }
+
         EventFullDto event = findEventById(eventId);
         UserDto user = findUserById(userId);
 
