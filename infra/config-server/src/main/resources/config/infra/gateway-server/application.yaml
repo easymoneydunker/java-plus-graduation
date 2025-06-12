@@ -38,25 +38,11 @@ spring:
             - Path=/hit/**
             - Path=/stats
             - Path=/stats/**
-        - id: event-service
+        - id: event_service_route
           uri: lb://event-service
           predicates:
-            - Path=/admin/events
-            - Path=/admin/events/**
-            - Path=/users/*/events
-            - Path=/users/*/events/**
-            - Path=/users/*/events/*/requests
-            - Path=/users/*/events/*/requests/**
-            - Path=/events
-            - Path=/events/**
-            - Path=/categories
-            - Path=/categories/**
-            - Path=/admin/categories
-            - Path=/admin/categories/**
-            - Path=/admin/compilations
-            - Path=/admin/compilations/**
-            - Path=/compilations
-            - Path=/compilations/**
+            - Path=/events/**, /users/*/events/**, /admin/events/**, /compilations/**, /admin/compilations/**, /admin/categories/**, /categories/**
+
 management:
   endpoint:
     gateway:
