@@ -11,12 +11,12 @@ import java.util.List;
 @FeignClient(name = "user-service", path = "/admin/users", configuration = FeignClientConfig.class)
 public interface UserClient {
 
-    @GetMapping("/multiple")
+    @GetMapping
     List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
                            @RequestParam("from") Integer from,
                            @RequestParam("size") Integer size);
 
-    @GetMapping
+    @GetMapping("/user")
     UserDto getUser(@RequestParam Long id);
 
     @PostMapping
