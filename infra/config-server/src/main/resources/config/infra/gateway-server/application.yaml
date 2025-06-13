@@ -12,36 +12,26 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/admin/users
-            - Path=/admin/users/**
-        - id: comment-service
+        - id: comment_service_route
           uri: lb://comment-service
           predicates:
-            - Path=/users/*/events/*/comments
-            - Path=/users/*/events/*/comments/**
-            - Path=/events/*/comments
-            - Path=/events/*/comments/**
-        - id: request-service
+            - Path=/users/*/comments/**, /admin/comments/**
+
+        - id: request_service_route
           uri: lb://request-service
           predicates:
-            - Path=/users/*/requests
-            - Path=/users/*/requests/**
-            - Path=/requests
-            - Path=/requests/**
-        - id: stats-server
-          uri: lb://stats-server
-          predicates:
-            - Path=/hit
-            - Path=/hit/**
-            - Path=/stats
-            - Path=/stats/**
+            - Path=/users/*/requests/**,/users/*/events/*/requests/**,/users/*/events/*/requests
+
+
         - id: event_service_route
           uri: lb://event-service
           predicates:
             - Path=/events/**, /users/*/events/**, /admin/events/**, /compilations/**, /admin/compilations/**, /admin/categories/**, /categories/**
+
+        - id: user_service_route
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
 
 management:
   endpoint:
