@@ -8,22 +8,23 @@ import ru.practicum.feign.config.FeignClientConfig;
 
 import java.util.List;
 
-@FeignClient(name = "request-service", path = "/users/{userId}/requests", configuration = FeignClientConfig.class)
+@FeignClient(name = "request-service", configuration = FeignClientConfig.class)
 public interface RequestClient {
-    @GetMapping
-    List<RequestDto> getRequests(@PathVariable long userId,
+    @GetMapping("/users/{userId}/requests")
+    List<RequestDto> getRequests(@PathVariable("userId") long userId,
                                  @RequestParam(required = false) Long eventId);
 
-    @GetMapping("/event")
-    List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIdIn(@PathVariable long userId,
+    @GetMapping("/users/{userId}/requests/event")
+    List<RequestDto> getRequestsByUserIdAndEventIdAndRequestIdIn(@PathVariable("userId") long userId,
                                                                  @RequestParam long eventId,
                                                                  @RequestParam List<Long> requestIds);
 
-    @GetMapping("/confirmed")
-    List<RequestDto> getConfirmedRequests(@PathVariable long userId,
+    @GetMapping("/users/{userId}/requests/confirmed")
+    List<RequestDto> getConfirmedRequests(@PathVariable("userId") long userId,
                                           @RequestParam long eventId,
                                           @RequestParam RequestStatus requestStatus);
 
-    @PutMapping
-    List<RequestDto> saveAll(@RequestBody List<RequestDto> requestDtoList);
+    @PutMapping("/users/{userId}/requests")
+    List<RequestDto> saveAll(@PathVariable("userId") long userId,
+                             @RequestBody List<RequestDto> requestDtoList);
 }

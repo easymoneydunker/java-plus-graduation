@@ -39,14 +39,6 @@ public class RequestController {
         return requestService.cancelRequest(userId, requestId);
     }
 
-    @PatchMapping("/events/{eventId}/requests")
-    public RequestDto confirmRequest(@PathVariable long userId,
-                                     @PathVariable long eventId,
-                                     @RequestBody RequestDto dto) {
-        return requestService.confirmRequest(userId, eventId, dto);
-    }
-
-
     @PutMapping
     public List<RequestDto> saveAll(@RequestBody List<RequestDto> requestDtoList) {
         return requestService.saveAll(requestDtoList);
