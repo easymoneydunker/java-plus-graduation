@@ -30,7 +30,7 @@ public class AdminUserController {
     }
 
     @GetMapping
-    public UserDto getUser(@RequestParam(required = false) Long id) {
+    public UserDto getUser(@RequestParam Long id) {
         return service.getUser(id);
     }
 

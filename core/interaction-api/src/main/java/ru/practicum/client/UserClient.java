@@ -11,16 +11,16 @@ import java.util.List;
 public interface UserClient {
 
     @GetMapping("/multiple")
-    List<UserDto> getUsers(@RequestParam(value = "ids", required = false) List<Long> ids,
-                           @RequestParam(value = "from", defaultValue = "0") Integer from,
-                           @RequestParam(value = "size", defaultValue = "10") Integer size);
+    List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                           @RequestParam("from") Integer from,
+                           @RequestParam("size") Integer size);
 
     @GetMapping
-    UserDto getUser(@RequestParam(value = "id", required = false) Long id);
+    UserDto getUser(@RequestParam Long id);
 
     @PostMapping
     UserDto registerUser(@RequestBody UserRequestDto userRequestDto);
 
     @DeleteMapping("/{userId}")
-    void delete(@PathVariable("userId") Long userId);
+    void deleteUser(@PathVariable Long userId);
 }

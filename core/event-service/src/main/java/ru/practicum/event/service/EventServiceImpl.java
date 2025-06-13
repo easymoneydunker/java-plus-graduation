@@ -297,7 +297,7 @@ public class EventServiceImpl implements EventService {
         Predicate predicate = cb.conjunction();
 
         if (users != null && !users.isEmpty()) {
-            predicate = cb.and(predicate, event.get("user").get("id").in(users));
+            predicate = cb.and(predicate, event.get("userId").in(users));
         }
 
         if (states != null && !states.isEmpty()) {
