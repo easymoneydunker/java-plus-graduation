@@ -94,8 +94,12 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto getEvent(Long userId, Long eventId) {
         log.info("Getting event with id: {} for user with id: {}", eventId, userId);
-        Event event = eventRepository.findByIdAndUserId(eventId, userId).orElseThrow(() -> new NotFoundException(
-                "Event with id " + eventId + " and user id " + userId + " was not found"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Event with id " + eventId + " not found"));
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConflictException("Event with id " + eventId + " is not published");
+        }
 
         UserDto userDto = fetchUserById(userId);
 

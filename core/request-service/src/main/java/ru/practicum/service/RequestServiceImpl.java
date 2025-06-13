@@ -146,8 +146,15 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private EventFullDto findEventById(long eventId) {
-        log.debug("Fetching event by id={}", eventId);
-        return eventClient.getPublicEventById(eventId);
+        EventFullDto eventFullDto;
+        try {
+            log.debug("Fetching event by id={}", eventId);
+            eventFullDto = eventClient.getPublicEventById(eventId);
+        } catch (Exception e) {
+            log.error("Error while fetching event by id={}", eventId, e);
+            throw new NotFoundException(MessageFormat.format("Error while fetching event by id={0}", eventId));
+        }
+        return eventFullDto;
     }
 
     @Override
