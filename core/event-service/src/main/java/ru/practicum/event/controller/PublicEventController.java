@@ -53,4 +53,12 @@ public class PublicEventController {
             @RequestParam int countDelta) {
         eventService.updateConfirmedRequests(eventId, countDelta);
     }
+
+    @PutMapping("/{eventId}/confirmations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateConfirmedRequestsWithPut(
+            @PathVariable Long eventId,
+            @RequestParam int countDelta) {
+        eventService.updateConfirmedRequests(eventId, countDelta);
+    }
 }

@@ -3,6 +3,7 @@ package ru.practicum.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.dto.event.EventFullDto;
@@ -189,6 +190,7 @@ public class RequestServiceImpl implements RequestService {
         return result;
     }
 
+    @Transactional
     @Override
     public List<RequestDto> saveAll(List<RequestDto> requests) {
         log.info("Saving batch of {} requests", requests.size());

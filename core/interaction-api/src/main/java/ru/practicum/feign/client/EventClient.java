@@ -3,7 +3,10 @@ package ru.practicum.feign.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.event.*;
+import ru.practicum.dto.event.EventFullDto;
+import ru.practicum.dto.event.EventShortDto;
+import ru.practicum.dto.event.NewEventDto;
+import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.feign.config.FeignClientConfig;
 
@@ -23,10 +26,6 @@ public interface EventClient {
                                       @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                       @RequestParam(defaultValue = "0") int from,
                                       @RequestParam(defaultValue = "10") int size);
-
-    @RequestMapping(method = RequestMethod.PATCH, value = "/admin/events/{eventId}")
-    EventFullDto updateEventByAdmin(@PathVariable Long eventId,
-                                    @RequestBody UpdateEventAdminRequest updateRequest);
 
     @GetMapping("/users/{userId}/events")
     List<EventShortDto> getUserEvents(@PathVariable Long userId,
@@ -50,11 +49,6 @@ public interface EventClient {
     List<RequestDto> getEventRequests(@PathVariable Long userId,
                                       @PathVariable Long eventId);
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/users/{userId}/events/{eventId}/requests")
-    EventRequestStatusUpdateResult updateRequestStatuses(@PathVariable Long userId,
-                                                         @PathVariable Long eventId,
-                                                         @RequestBody EventRequestStatusUpdateRequest request);
-
     @GetMapping("/events")
     List<EventShortDto> getPublicEvents(@RequestParam(required = false) String text,
                                         @RequestParam(required = false) List<Long> categories,
@@ -71,7 +65,7 @@ public interface EventClient {
     @GetMapping("/events/{eventId}")
     EventFullDto getPublicEventById(@PathVariable Long eventId);
 
-    @PatchMapping("/events/{eventId}/confirmations")
+    @PutMapping("/events/{eventId}/confirmations")
     void updateConfirmedRequests(@PathVariable Long eventId,
                                  @RequestParam int countDelta);
 }
