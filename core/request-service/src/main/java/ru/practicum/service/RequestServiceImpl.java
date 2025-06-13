@@ -192,21 +192,46 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestDto> saveAll(List<RequestDto> requests) {
         log.info("Saving batch of {} requests", requests.size());
-        List<Request> requestEntities = requests.stream().map(requestMapper::toEntity).toList();
-        EventFullDto event = findEventById(requestEntities.getFirst().getEventId());
+        if (requests.isEmpty()) {
+            return List.of();
+        }
+
+        List<Request> requestEntities = requests.stream()
+                .map(requestMapper::toEntity)
+                .collect(Collectors.toList());
+
+        Request firstRequest = requestEntities.getFirst();
+        EventFullDto event = findEventById(firstRequest.getEventId());
 
         int currentConfirmedRequests = event.getConfirmedRequests();
-        int confirmedReq = (int) requestEntities.stream().filter(r -> r.getStatus() == RequestStatus.CONFIRMED).count();
-        int notConfirmedReq = requestEntities.size() - confirmedReq;
-        int confirmedRequests = currentConfirmedRequests + confirmedReq - notConfirmedReq;
 
-        event.setConfirmedRequests(confirmedRequests);
-        eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
+        int newConfirmedCount = (int) requestEntities.stream()
+                .filter(r -> r.getStatus() == RequestStatus.CONFIRMED)
+                .count();
+
+        List<Request> oldRequests = requestRepository.findAllById(
+                requestEntities.stream().map(Request::getId).collect(Collectors.toList())
+        );
+        int oldConfirmedCount = (int) oldRequests.stream()
+                .filter(r -> r.getStatus() == RequestStatus.CONFIRMED)
+                .count();
+
+        int updatedConfirmedRequests = currentConfirmedRequests - oldConfirmedCount + newConfirmedCount;
+        if (updatedConfirmedRequests < 0) updatedConfirmedRequests = 0;
 
         List<Request> savedRequests = requestRepository.saveAllAndFlush(requestEntities);
-        List<RequestDto> result = savedRequests.stream().map(requestMapper::toDto).collect(Collectors.toList());
 
-        log.info("Saved {} requests and updated event confirmed count to {}", result.size(), confirmedRequests);
-        return result;
+        event.setConfirmedRequests(updatedConfirmedRequests);
+        try {
+            eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
+        } catch (Exception e) {
+            log.error("Failed to update event after saving requests", e);
+            throw new RuntimeException("Failed to update event after saving requests");
+        }
+
+        return savedRequests.stream()
+                .map(requestMapper::toDto)
+                .collect(Collectors.toList());
     }
+
 }
