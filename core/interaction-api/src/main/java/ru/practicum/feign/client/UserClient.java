@@ -1,13 +1,14 @@
-package ru.practicum.client;
+package ru.practicum.feign.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserRequestDto;
+import ru.practicum.feign.config.FeignClientConfig;
 
 import java.util.List;
 
-@FeignClient(name = "user-service", path = "/admin/users")
+@FeignClient(name = "user-service", path = "/admin/users", configuration = FeignClientConfig.class)
 public interface UserClient {
 
     @GetMapping("/multiple")

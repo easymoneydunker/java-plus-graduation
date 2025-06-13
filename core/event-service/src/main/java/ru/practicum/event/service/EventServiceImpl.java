@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.service.CategoriesService;
-import ru.practicum.client.RequestClient;
-import ru.practicum.client.UserClient;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.common.PageableBuilder;
@@ -30,6 +28,8 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
+import ru.practicum.feign.client.RequestClient;
+import ru.practicum.feign.client.UserClient;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

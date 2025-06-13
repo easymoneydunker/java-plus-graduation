@@ -1,13 +1,14 @@
-package ru.practicum.client;
+package ru.practicum.feign.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.dto.request.RequestStatus;
+import ru.practicum.feign.config.FeignClientConfig;
 
 import java.util.List;
 
-@FeignClient(name = "request-service", path = "/users/{userId}/requests")
+@FeignClient(name = "request-service", path = "/users/{userId}/requests", configuration = FeignClientConfig.class)
 public interface RequestClient {
     @GetMapping
     List<RequestDto> getRequests(@PathVariable long userId,

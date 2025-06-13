@@ -1,15 +1,16 @@
-package ru.practicum.client;
+package ru.practicum.feign.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
+import ru.practicum.feign.config.FeignClientConfig;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@FeignClient(name = "event-service")
+@FeignClient(name = "event-service", configuration = FeignClientConfig.class)
 public interface EventClient {
 
     @GetMapping("/admin/events")

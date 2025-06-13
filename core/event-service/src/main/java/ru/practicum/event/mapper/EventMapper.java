@@ -1,9 +1,9 @@
 package ru.practicum.event.mapper;
 
 import org.mapstruct.*;
-import ru.practicum.client.UserClient;
 import ru.practicum.dto.event.*;
 import ru.practicum.event.model.Event;
+import ru.practicum.feign.client.UserClient;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
