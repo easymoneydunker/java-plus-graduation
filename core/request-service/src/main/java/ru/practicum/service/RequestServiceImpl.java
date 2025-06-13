@@ -144,21 +144,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private EventFullDto findEventById(long eventId) {
-        try {
-            log.info("Fetching event with id: {}", eventId);
-            return eventClient.getPublicEventById(eventId);
-        } catch (FeignException e) {
-            if (e.status() == 404) {
-                throw new NotFoundException("Event with id " + eventId + " not found");
-            } else if (e.status() == 409 || (e.getMessage() != null && e.getMessage().contains("not published"))) {
-                throw new ConflictException("Event with id " + eventId + " is not published");
-            }
-            log.error("Feign client error for event {}", eventId, e);
-            throw new ServiceUnavailableException("Event service unavailable");
-        } catch (Exception e) {
-            log.error("Unexpected error fetching event {}", eventId, e);
-            throw new ServiceUnavailableException("Failed to fetch event information");
-        }
+        return eventClient.getPublicEventById(eventId);
     }
 
     @Override
