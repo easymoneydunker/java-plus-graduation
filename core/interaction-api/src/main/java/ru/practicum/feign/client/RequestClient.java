@@ -1,5 +1,6 @@
 package ru.practicum.feign.client;
 
+import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.request.RequestDto;
@@ -9,6 +10,7 @@ import ru.practicum.feign.config.FeignClientConfig;
 import java.util.List;
 
 @FeignClient(name = "request-service", configuration = FeignClientConfig.class)
+@Headers("feign-request: true")
 public interface RequestClient {
     @GetMapping("/users/{userId}/requests")
     List<RequestDto> getRequests(@PathVariable("userId") long userId,

@@ -1,5 +1,6 @@
 package ru.practicum.feign.client;
 
+import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @FeignClient(name = "event-service", configuration = FeignClientConfig.class)
+@Headers("feign-request: true")
 public interface EventClient {
 
     @GetMapping("/admin/events")
@@ -62,7 +64,7 @@ public interface EventClient {
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size);
 
-    @GetMapping("/events/{eventId}")
+    @GetMapping("/events/{eventId}/feign")
     EventFullDto getPublicEventById(@PathVariable Long eventId);
 
     @PutMapping("/events/{eventId}/confirmations")

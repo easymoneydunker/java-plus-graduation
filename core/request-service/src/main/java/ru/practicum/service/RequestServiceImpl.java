@@ -53,7 +53,14 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Event id is zero");
         }
 
-        EventFullDto event = findEventById(eventId);
+        EventFullDto event;
+
+        event = eventClient.getPublicEventById(eventId);
+        if (!EventState.PUBLISHED.equals(event.getState())) {
+            log.warn("Event {} is not published, cannot create request", eventId);
+            throw new ConflictException("Event not yet published");
+        }
+
         UserDto user = findUserById(userId);
 
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
@@ -144,7 +151,18 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private EventFullDto findEventById(long eventId) {
-        return eventClient.getPublicEventById(eventId);
+        try {
+            EventFullDto event = eventClient.getPublicEventById(eventId);
+
+            if (!event.getState().equals(EventState.PUBLISHED)) {
+                log.warn("Event with id={} is not published", eventId);
+                throw new NotFoundException(MessageFormat.format("Event with id={0} was not found", eventId));
+            }
+            return event;
+        } catch (FeignException.NotFound e) {
+            log.warn("Event with id={} not found", eventId);
+            throw new NotFoundException(MessageFormat.format("Event with id={0} was not found", eventId));
+        }
     }
 
     @Override

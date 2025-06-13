@@ -46,6 +46,12 @@ public class PublicEventController {
         return eventService.getPublicEvent(id, request);
     }
 
+    @GetMapping("/{id}/feign")
+    public EventFullDto getEventFeign(@PathVariable Long id, HttpServletRequest request) {
+        log.info("GET /events/{}", id);
+        return eventService.getPublicEventForFeign(id, request);
+    }
+
     @PatchMapping("/{eventId}/confirmations")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateConfirmedRequests(

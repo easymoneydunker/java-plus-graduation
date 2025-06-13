@@ -30,6 +30,9 @@ public interface EventService {
 
     EventFullDto getPublicEvent(Long id, HttpServletRequest request);
 
+    @Transactional
+    EventFullDto getPublicEventForFeign(Long id, HttpServletRequest request);
+
     List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
 
