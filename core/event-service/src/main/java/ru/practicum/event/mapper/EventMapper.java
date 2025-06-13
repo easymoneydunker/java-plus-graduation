@@ -12,8 +12,11 @@ public interface EventMapper {
     @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
     EventShortDto toShortDto(Event event);
 
+    @Mapping(target = "id", source = "event.id")
+    @Mapping(target = "category", source = "event.category")
     @Mapping(target = "initiator", source = "userDto")
     @Mapping(target = "views", expression = "java(event.getViews() == null ? 0 : event.getViews().size())")
+    @Mapping(target = "location", source = "event.location")
     EventFullDto toFullDto(Event event, UserDto userDto);
 
     @Mapping(target = "category.id", source = "category")

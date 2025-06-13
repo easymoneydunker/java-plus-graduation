@@ -226,7 +226,7 @@ public class RequestServiceImpl implements RequestService {
             eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
         } catch (Exception e) {
             log.error("Failed to update event after saving requests", e);
-            throw new RuntimeException("Failed to update event after saving requests");
+            throw new RuntimeException("Failed to update event after saving requests, caused by: " + e);
         }
 
         return savedRequests.stream()
