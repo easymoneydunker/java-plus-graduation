@@ -97,7 +97,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id " + eventId + " not found"));
 
-        if (event.getState() != EventState.PUBLISHED) {
+        if (event.getState() != EventState.PUBLISHED && !userId.equals(event.getUserId())) {
             throw new ConflictException("Event with id " + eventId + " is not published");
         }
 

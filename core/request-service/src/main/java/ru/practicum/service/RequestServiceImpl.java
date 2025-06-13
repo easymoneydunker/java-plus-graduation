@@ -72,11 +72,6 @@ public class RequestServiceImpl implements RequestService {
         int requestsSize = requestRepository.findAllByEventId(eventId).size();
         log.debug("Event {} has {} existing requests", eventId, requestsSize);
 
-        if (event.getParticipantLimit() > 0 && !event.isRequestModeration() && event.getParticipantLimit() <= requestsSize) {
-            log.warn("Participant limit exceeded for eventId={}", eventId);
-            throw new ConflictException("Participant limit exceeded");
-        }
-
         Request eventRequest = new Request(null, LocalDateTime.now(), eventId, userId, RequestStatus.PENDING);
 
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
