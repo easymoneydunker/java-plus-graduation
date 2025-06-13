@@ -2,6 +2,7 @@ package ru.practicum.event.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
 import ru.practicum.event.model.Event;
@@ -35,4 +36,7 @@ public interface EventService {
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest request);
 
     Event getOrThrow(Long eventId);
+
+    @Transactional
+    void updateConfirmedRequests(Long eventId, int countDelta);
 }

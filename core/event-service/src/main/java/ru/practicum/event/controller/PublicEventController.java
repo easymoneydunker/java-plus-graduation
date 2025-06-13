@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
@@ -43,5 +44,13 @@ public class PublicEventController {
     public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
         log.info("GET /events/{}", id);
         return eventService.getPublicEvent(id, request);
+    }
+
+    @PatchMapping("/{eventId}/confirmations")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateConfirmedRequests(
+            @PathVariable Long eventId,
+            @RequestParam int countDelta) {
+        eventService.updateConfirmedRequests(eventId, countDelta);
     }
 }

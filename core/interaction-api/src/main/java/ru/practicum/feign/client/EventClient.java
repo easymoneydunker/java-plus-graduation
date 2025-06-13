@@ -70,4 +70,8 @@ public interface EventClient {
 
     @GetMapping("/events/{eventId}")
     EventFullDto getPublicEventById(@PathVariable Long eventId);
+
+    @PatchMapping("/events/{eventId}/confirmations")
+    void updateConfirmedRequests(@PathVariable Long eventId,
+                                 @RequestParam int countDelta);
 }

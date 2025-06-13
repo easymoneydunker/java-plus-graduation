@@ -201,9 +201,7 @@ public class RequestServiceImpl implements RequestService {
                 .collect(Collectors.toList());
 
         Request firstRequest = requestEntities.getFirst();
-        EventFullDto event = findEventById(firstRequest.getEventId());
-
-        int currentConfirmedRequests = event.getConfirmedRequests();
+        long eventId = firstRequest.getEventId();
 
         int newConfirmedCount = (int) requestEntities.stream()
                 .filter(r -> r.getStatus() == RequestStatus.CONFIRMED)
@@ -216,19 +214,9 @@ public class RequestServiceImpl implements RequestService {
                 .filter(r -> r.getStatus() == RequestStatus.CONFIRMED)
                 .count();
 
-        int updatedConfirmedRequests = currentConfirmedRequests - oldConfirmedCount + newConfirmedCount;
-        if (updatedConfirmedRequests < 0) updatedConfirmedRequests = 0;
+        eventClient.updateConfirmedRequests(eventId, newConfirmedCount - oldConfirmedCount);
 
         List<Request> savedRequests = requestRepository.saveAllAndFlush(requestEntities);
-
-        event.setConfirmedRequests(updatedConfirmedRequests);
-        try {
-            eventClient.updateUserEvent(event.getInitiator().getId(), event.getId(), eventMapper.toUpdateRequest(event));
-        } catch (Exception e) {
-            log.error("Failed to update event after saving requests", e);
-            throw new RuntimeException("Failed to update event after saving requests, caused by: " + e);
-        }
-
         return savedRequests.stream()
                 .map(requestMapper::toDto)
                 .collect(Collectors.toList());

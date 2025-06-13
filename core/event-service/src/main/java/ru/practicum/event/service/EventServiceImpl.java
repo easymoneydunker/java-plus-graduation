@@ -416,4 +416,16 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Cannot cancel the event because it has been published");
         }
     }
+
+    @Transactional
+    @Override
+    public void updateConfirmedRequests(Long eventId, int countDelta) {
+        Event event = getOrThrow(eventId);
+        int newCount = event.getConfirmedRequests() + countDelta;
+        if (newCount < 0) {
+            throw new ValidationException("Confirmed requests cannot be negative");
+        }
+        event.setConfirmedRequests(newCount);
+        eventRepository.save(event);
+    }
 }
