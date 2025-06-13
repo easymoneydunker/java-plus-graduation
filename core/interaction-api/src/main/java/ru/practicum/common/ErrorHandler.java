@@ -57,4 +57,12 @@ public class ErrorHandler {
         return new ApiError(HttpStatus.CONFLICT, "Integrity constraint has been violated.", e.getMessage(),
                 getStackTrace(e));
     }
+
+    @ExceptionHandler(feign.FeignException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ApiError handleFeignException(feign.FeignException e) {
+        log.error("Feign error: {}", e.getMessage(), e);
+        return new ApiError(HttpStatus.BAD_GATEWAY, "External service error", e.getMessage(), getStackTrace(e));
+    }
+
 }
