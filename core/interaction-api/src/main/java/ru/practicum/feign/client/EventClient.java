@@ -24,7 +24,7 @@ public interface EventClient {
                                       @RequestParam(defaultValue = "0") int from,
                                       @RequestParam(defaultValue = "10") int size);
 
-    @PatchMapping("/admin/events/{eventId}")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/admin/events/{eventId}")
     EventFullDto updateEventByAdmin(@PathVariable Long eventId,
                                     @RequestBody UpdateEventAdminRequest updateRequest);
 
@@ -41,7 +41,7 @@ public interface EventClient {
     EventFullDto getUserEvent(@PathVariable Long userId,
                               @PathVariable Long eventId);
 
-    @PatchMapping("/users/{userId}/events/{eventId}")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/users/{userId}/events/{eventId}")
     EventFullDto updateUserEvent(@PathVariable Long userId,
                                  @PathVariable Long eventId,
                                  @RequestBody UpdateEventUserRequest request);
@@ -50,7 +50,7 @@ public interface EventClient {
     List<RequestDto> getEventRequests(@PathVariable Long userId,
                                       @PathVariable Long eventId);
 
-    @PatchMapping("/users/{userId}/events/{eventId}/requests")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/users/{userId}/events/{eventId}/requests")
     EventRequestStatusUpdateResult updateRequestStatuses(@PathVariable Long userId,
                                                          @PathVariable Long eventId,
                                                          @RequestBody EventRequestStatusUpdateRequest request);
