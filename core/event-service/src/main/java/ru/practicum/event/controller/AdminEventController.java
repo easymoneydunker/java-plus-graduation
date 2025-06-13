@@ -31,6 +31,8 @@ public class AdminEventController {
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size,
                                         HttpServletRequest httpServletRequest) {
+        log.info("GET /admin/events | users={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}",
+                users, states, categories, rangeStart, rangeEnd, from, size);
         return eventService.getAllEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
@@ -38,6 +40,7 @@ public class AdminEventController {
     public EventFullDto updateEvent(@PathVariable Long eventId,
                                     @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest,
                                     HttpServletRequest httpServletRequest) {
+        log.info("PATCH /admin/events/{} | request={}", eventId, updateEventAdminRequest);
         return eventService.updateEventByAdmin(eventId, updateEventAdminRequest);
     }
 }

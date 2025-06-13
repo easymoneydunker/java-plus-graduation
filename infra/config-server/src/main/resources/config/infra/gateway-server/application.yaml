@@ -20,13 +20,12 @@ spring:
         - id: request_service_route
           uri: lb://request-service
           predicates:
-            - Path=/users/*/requests/**,/users/*/events/*/requests/**,/users/*/events/*/requests
-
+            - Path=/users/*/requests/**
 
         - id: event_service_route
           uri: lb://event-service
           predicates:
-            - Path=/events/**, /users/*/events/**, /admin/events/**, /compilations/**, /admin/compilations/**, /admin/categories/**, /categories/**
+            - Path=/events/**, /users/*/events/**, /admin/events/**, /compilations/**, /admin/compilations/**, /admin/categories/**, /categories/**, ,/users/*/events/*/requests/**,/users/*/events/*/requests
 
         - id: user_service_route
           uri: lb://user-service
