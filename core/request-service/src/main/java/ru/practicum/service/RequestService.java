@@ -20,4 +20,6 @@ public interface RequestService {
     RequestDto cancelRequest(long userId, long requestId);
 
     List<RequestDto> getConfirmedRequests(Long eventId, RequestStatus status);
+
+    RequestDto confirmRequest(long userId, long eventId, RequestDto dto);
 }

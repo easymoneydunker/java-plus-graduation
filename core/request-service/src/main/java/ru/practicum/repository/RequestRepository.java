@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByRequesterId(Long userId);
 
+    Request findByRequesterIdAndEventId(Long requesterId, Long eventId);
+
     boolean existsByRequesterIdAndEventId(Long requesterId, Long eventId);
 
     List<Request> findAllByEventId(Long eventId);

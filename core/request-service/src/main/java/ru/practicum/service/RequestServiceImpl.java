@@ -117,6 +117,28 @@ public class RequestServiceImpl implements RequestService {
         return result;
     }
 
+    @Override
+    public RequestDto confirmRequest(long userId, long eventId, RequestDto dto) {
+        log.info("Confirming request for userId={} and eventId={}", userId, eventId);
+        if (eventId == 0) {
+            log.error("Event id is zero");
+        }
+        EventFullDto event = findEventById(eventId);
+        UserDto user = findUserById(userId);
+
+        Request request = requestRepository.findByRequesterIdAndEventId(userId, eventId);
+
+        if (request == null) {
+            log.warn("Request for userId={} not found", userId);
+            throw new NotFoundException(MessageFormat.format("Request with id={0} was not found", eventId));
+        }
+
+        request.setStatus(RequestStatus.CONFIRMED);
+        eventClient.updateUserEvent(userId, eventId, eventMapper.toUpdateRequest(event));
+
+        return requestMapper.toDto(requestRepository.save(request));
+    }
+
     private UserDto findUserById(long userId) {
         log.debug("Fetching user by id={}", userId);
         return userClient.getUser(userId);
