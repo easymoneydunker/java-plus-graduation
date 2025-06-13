@@ -325,9 +325,12 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto getPublicEvent(Long id, HttpServletRequest request) {
         log.info("Getting public event with id: {}", id);
-        Event event =
-                eventRepository.findByIdAndState(id, EventState.PUBLISHED).orElseThrow(() -> new NotFoundException(
-                        "Event with id " + id + " not found or not published"));
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event not found"));
+
+        if (event.getState() != EventState.PUBLISHED) {
+            throw new ConflictException("Event is not published");
+        }
         eventRepository.saveAndFlush(event);
         viewService.register(event, request);
 
