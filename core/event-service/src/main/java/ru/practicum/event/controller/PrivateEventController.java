@@ -54,6 +54,15 @@ public class PrivateEventController {
         return eventService.updateEvent(userId, eventId, request);
     }
 
+    @PutMapping("/{eventId}")
+    public EventFullDto updateEventWithPutMapping(@PathVariable Long userId,
+                                                  @PathVariable Long eventId,
+                                                  @RequestBody @Valid UpdateEventUserRequest request,
+                                                  HttpServletRequest httpServletRequest) {
+        log.info("PUT /users/{}/events/{} | request={}", userId, eventId, request);
+        return eventService.updateEvent(userId, eventId, request);
+    }
+
     @GetMapping("/{eventId}/requests")
     public List<RequestDto> getRequests(@PathVariable Long userId,
                                         @PathVariable Long eventId,

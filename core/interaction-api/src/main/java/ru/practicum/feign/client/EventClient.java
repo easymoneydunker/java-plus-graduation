@@ -41,7 +41,7 @@ public interface EventClient {
     EventFullDto getUserEvent(@PathVariable Long userId,
                               @PathVariable Long eventId);
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/users/{userId}/events/{eventId}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/users/{userId}/events/{eventId}")
     EventFullDto updateUserEvent(@PathVariable Long userId,
                                  @PathVariable Long eventId,
                                  @RequestBody UpdateEventUserRequest request);
