@@ -1,5 +1,7 @@
 package ru.practicum.service;
 
+import feign.FeignException;
+import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,19 +71,20 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Event not yet published");
         }
 
-        int requestsSize = requestRepository.findAllByEventId(eventId).size();
-        log.debug("Event {} has {} existing requests", eventId, requestsSize);
-
         Request eventRequest = new Request(null, LocalDateTime.now(), eventId, userId, RequestStatus.PENDING);
 
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             eventRequest.setStatus(RequestStatus.CONFIRMED);
-        }
-
-        if (eventRequest.getStatus() == RequestStatus.CONFIRMED) {
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-            eventClient.updateUserEvent(userId, eventId, eventMapper.toUpdateRequest(event));
-            log.debug("Request confirmed immediately and event updated for eventId={}", eventId);
+            try {
+                if (event.getParticipantLimit() > 0) {
+                    event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                    eventClient.updateUserEvent(userId, eventId, eventMapper.toUpdateRequest(event));
+                }
+            } catch (FeignException e) {
+                log.error("Failed to update event confirmed requests", e);
+                throw new ServiceUnavailableException("Could not update event status");
+            }
+            log.debug("Request confirmed immediately for eventId={}", eventId);
         }
 
         RequestDto saved = requestMapper.toDto(requestRepository.save(eventRequest));
@@ -143,11 +146,14 @@ public class RequestServiceImpl implements RequestService {
     private EventFullDto findEventById(long eventId) {
         EventFullDto eventFullDto;
         try {
-            log.debug("Fetching event by id={}", eventId);
+            log.info("Fetching event with id: {}", eventId);
             eventFullDto = eventClient.getPublicEventById(eventId);
         } catch (Exception e) {
-            log.error("Error while fetching event by id={}", eventId, e);
-            throw new NotFoundException(MessageFormat.format("Error while fetching event by id={0}", eventId));
+            if (e.getMessage().contains("is not published")) {
+                throw new ConflictException("Event with id " + eventId + " is not published");
+            } else {
+                throw new NotFoundException("Event with id " + eventId + " not found");
+            }
         }
         return eventFullDto;
     }
