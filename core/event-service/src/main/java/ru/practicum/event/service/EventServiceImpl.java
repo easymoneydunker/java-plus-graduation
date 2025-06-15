@@ -1,5 +1,6 @@
 package ru.practicum.event.service;
 
+import com.google.protobuf.Timestamp;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -34,6 +35,7 @@ import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.feign.client.RequestClient;
 import ru.practicum.feign.client.UserClient;
 import ru.practicum.grpc.stats.actions.ActionTypeProto;
+import ru.practicum.grpc.stats.actions.UserActionProto;
 import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
 
 import java.time.Instant;
@@ -57,10 +59,10 @@ public class EventServiceImpl implements EventService {
     private final LocationMapper locationMapper;
     private final UserClient userClient;
     private final CategoriesService categoryService;
-    @PersistenceContext
-    private EntityManager entityManager;
     private final RecommendationClient recommendationClient;
     private final CollectorClient collectorClient;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -482,5 +484,17 @@ public class EventServiceImpl implements EventService {
             log.warn("User with id: {} did not attend event with id: {}", userId, eventId);
             throw new ValidationException("User did not attend this event.");
         }
+    }
+
+    private UserActionProto createUserAction(Long eventId, Long userId, ActionTypeProto type, Instant timestamp) {
+        return UserActionProto.newBuilder()
+                .setUserId(userId)
+                .setEventId(eventId)
+                .setActionType(type)
+                .setTimestamp(Timestamp.newBuilder()
+                        .setSeconds(timestamp.getEpochSecond())
+                        .setNanos(timestamp.getNano())
+                        .build())
+                .build();
     }
 }
