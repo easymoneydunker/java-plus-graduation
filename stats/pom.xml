@@ -14,9 +14,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>serialization</module>
         <module>stats-client</module>
         <module>aggregator</module>
-        <module>serialization</module>
         <module>analyzer</module>
         <module>collector</module>
     </modules>
