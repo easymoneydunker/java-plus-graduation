@@ -9,14 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.UserActionControllerGrpc;
 import ru.practicum.grpc.stats.actions.UserActionProto;
-import ru.practicum.handlers.ActionsHandlers;
+import ru.practicum.handler.ActionsHandler;
 
 @RequiredArgsConstructor
 
 @Slf4j
 @GrpcService
 public class UserActionCollector extends UserActionControllerGrpc.UserActionControllerImplBase {
-    private final ActionsHandlers actionHandler;
+    private final ActionsHandler actionHandler;
 
     @Override
     public void collectUserAction(UserActionProto request, StreamObserver<Empty> responseObserver) {
