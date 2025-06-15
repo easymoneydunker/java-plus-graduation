@@ -7,13 +7,14 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.CollectorClient;
+import ru.practicum.RecommendationClient;
 import ru.practicum.categories.service.CategoriesService;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
@@ -32,7 +33,10 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.feign.client.RequestClient;
 import ru.practicum.feign.client.UserClient;
+import ru.practicum.grpc.stats.actions.ActionTypeProto;
+import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +57,10 @@ public class EventServiceImpl implements EventService {
     private final LocationMapper locationMapper;
     private final UserClient userClient;
     private final CategoriesService categoryService;
-    private final ViewService viewService;
     @PersistenceContext
     private EntityManager entityManager;
+    private final RecommendationClient recommendationClient;
+    private final CollectorClient collectorClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -232,8 +237,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                               Boolean onlyAvailable, String sort, int from, int size,
-                                               HttpServletRequest request) {
+                                               Boolean onlyAvailable, String sort, int from, int size) {
         log.info("Getting public events with parameters: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, " +
                         "onlyAvailable={}, sort={}, from={}, size={}", text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
@@ -306,7 +310,6 @@ public class EventServiceImpl implements EventService {
         // Выполнение запроса
         List<Event> resultList = query.getResultList();
         eventRepository.saveAll(resultList);
-        viewService.registerAll(resultList, request);
         log.info("Found {} public events matching criteria", resultList.size());
         return resultList.stream().map(mapper::toShortDto).toList();
     }
@@ -323,14 +326,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto getPublicEvent(Long id, HttpServletRequest request) {
+    public EventFullDto getPublicEvent(Long id) {
         log.info("Getting public event with id: {}", id);
 
         Event event = eventRepository.findByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("No event found with id: " + id));
 
         eventRepository.saveAndFlush(event);
-        viewService.register(event, request);
 
         UserDto userDto = fetchUserById(event.getUserId());
 
@@ -339,14 +341,13 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto getPublicEventForFeign(Long id, HttpServletRequest request) {
+    public EventFullDto getPublicEventForFeign(Long id) {
         log.info("Getting public event with id: {}", id);
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Event with id " + id + " not found"));
 
         eventRepository.saveAndFlush(event);
-        viewService.register(event, request);
 
         UserDto userDto = fetchUserById(event.getUserId());
 
@@ -448,5 +449,38 @@ public class EventServiceImpl implements EventService {
         }
         event.setConfirmedRequests(newCount);
         eventRepository.save(event);
+    }
+
+    @Override
+    public List<EventRecommendationDto> getRecommendations(long userId) {
+        log.info("Getting recommendations for user with id: {}", userId);
+        int size = 10;
+        List<RecommendedEventProto> recommendedEvents = recommendationClient.getRecommendations(userId, size);
+        List<EventRecommendationDto> eventRecommendationDtoList = new ArrayList<>();
+        for (RecommendedEventProto recommendedEvent : recommendedEvents) {
+            EventRecommendationDto eventRecommendationDto = new EventRecommendationDto();
+            eventRecommendationDto.setEventId(recommendedEvent.getEventId());
+            eventRecommendationDto.setScore(recommendedEvent.getScore());
+            eventRecommendationDtoList.add(eventRecommendationDto);
+        }
+        return eventRecommendationDtoList;
+    }
+
+    @Override
+    public void addLike(Long eventId, Long userId) {
+        log.info("Adding like to event with id: {} from user with id: {}", eventId, userId);
+        RequestDto request = requestClient
+                .getRequests(userId, eventId).stream().filter(requestDto -> requestDto.getStatus()
+                        .equals(RequestStatus.CONFIRMED)).findAny().orElseThrow(() -> {
+                    log.warn("Request for user with id: {} was not found", userId);
+                    return new NotFoundException("Request for user with id: " + userId + " was not found");
+                });
+
+        if (request != null) {
+            collectorClient.sendUserAction(createUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE, Instant.now()));
+        } else {
+            log.warn("User with id: {} did not attend event with id: {}", userId, eventId);
+            throw new ValidationException("User did not attend this event.");
+        }
     }
 }

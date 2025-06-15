@@ -1,15 +1,21 @@
 package ru.practicum.event.controller;
 
+import com.google.protobuf.Timestamp;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.CollectorClient;
 import ru.practicum.dto.event.EventFullDto;
+import ru.practicum.dto.event.EventRecommendationDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.event.service.EventService;
+import ru.practicum.grpc.stats.actions.ActionTypeProto;
+import ru.practicum.grpc.stats.actions.UserActionProto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,6 +25,7 @@ import java.util.List;
 @Slf4j
 public class PublicEventController {
     private final EventService eventService;
+    private final CollectorClient collectorClient;
 
     @GetMapping
     public List<EventShortDto> getEvents(@RequestParam(required = false) String text,
@@ -36,20 +43,22 @@ public class PublicEventController {
         log.info("GET /events | text={}, categories={}, paid={}," +
                         " rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        return eventService.getPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from,
-                size, request);
+        return eventService
+                .getPublicEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
+    public EventFullDto getEvent(@PathVariable Long id, @RequestHeader("X-EWM-USER-ID") long userId) {
         log.info("GET /events/{}", id);
-        return eventService.getPublicEvent(id, request);
+        EventFullDto event = eventService.getPublicEvent(id);
+        collectorClient.sendUserAction(createUserAction(id, userId, ActionTypeProto.ACTION_VIEW, Instant.now()));
+        return event;
     }
 
     @GetMapping("/{id}/feign")
-    public EventFullDto getEventFeign(@PathVariable Long id, HttpServletRequest request) {
+    public EventFullDto getEventFeign(@PathVariable Long id) {
         log.info("GET /events/{}", id);
-        return eventService.getPublicEventForFeign(id, request);
+        return eventService.getPublicEventForFeign(id);
     }
 
     @PatchMapping("/{eventId}/confirmations")
@@ -66,5 +75,28 @@ public class PublicEventController {
             @PathVariable Long eventId,
             @RequestParam int countDelta) {
         eventService.updateConfirmedRequests(eventId, countDelta);
+    }
+
+    @GetMapping("/recommendations")
+    public List<EventRecommendationDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") long userId) {
+        return eventService.getRecommendations(userId);
+    }
+
+    @PutMapping("/{eventId}/like")
+    public void addLike(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") long userId) {
+        eventService.addLike(eventId, userId);
+    }
+
+
+    private UserActionProto createUserAction(Long eventId, Long userId, ActionTypeProto type, Instant timestamp) {
+        return UserActionProto.newBuilder()
+                .setUserId(userId)
+                .setEventId(eventId)
+                .setActionType(type)
+                .setTimestamp(Timestamp.newBuilder()
+                        .setSeconds(timestamp.getEpochSecond())
+                        .setNanos(timestamp.getNano())
+                        .build())
+                .build();
     }
 }
