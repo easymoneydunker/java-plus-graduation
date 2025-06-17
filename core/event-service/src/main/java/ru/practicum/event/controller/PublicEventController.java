@@ -24,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class PublicEventController {
+    private final static String X_EWM_USER_ID = "X-EWM-USER-ID";
     private final EventService eventService;
     private final CollectorClient collectorClient;
 
@@ -78,12 +79,12 @@ public class PublicEventController {
     }
 
     @GetMapping("/recommendations")
-    public List<EventRecommendationDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") long userId) {
+    public List<EventRecommendationDto> getRecommendations(@RequestHeader(X_EWM_USER_ID) long userId) {
         return eventService.getRecommendations(userId);
     }
 
     @PutMapping("/{eventId}/like")
-    public void addLike(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") long userId) {
+    public void addLike(@PathVariable Long eventId, @RequestHeader(X_EWM_USER_ID) long userId) {
         eventService.addLike(eventId, userId);
     }
 

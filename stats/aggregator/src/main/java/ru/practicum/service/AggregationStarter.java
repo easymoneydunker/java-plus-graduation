@@ -8,7 +8,7 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.config.AppConfig;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component
+@Service
 public class AggregationStarter {
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
     private final AggregatorService aggregatorService;

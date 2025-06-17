@@ -12,14 +12,13 @@ import java.time.Duration;
 @ToString
 @ConfigurationProperties("spring.kafka")
 public class AppConfig {
-    ProducerSettings producer;
-    ConsumerSettings consumer;
-    TopicsSettings topics;
+    private ProducerSettings producer;
+    private ConsumerSettings consumer;
+    private TopicsSettings topics;
 
     @Setter
     @Getter
     @ToString
-
     public static class ProducerSettings {
         private String bootstrapServers;
         private String keySerializer;

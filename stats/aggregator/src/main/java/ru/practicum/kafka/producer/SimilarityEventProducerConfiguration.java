@@ -7,19 +7,19 @@ import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import ru.practicum.kafka.KafkaConfig;
 
 import java.util.Properties;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Configuration
 public class SimilarityEventProducerConfiguration {
     private final KafkaConfig kafkaConfig;
 
     @Bean
-    SimilarityEventProducer getClient() {
+    public SimilarityEventProducer getClient() {
         return new SimilarityEventProducer() {
             private Producer<String, SpecificRecordBase> producer;
 
