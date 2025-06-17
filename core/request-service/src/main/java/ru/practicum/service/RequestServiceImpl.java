@@ -1,11 +1,13 @@
 package ru.practicum.service;
 
+import com.google.protobuf.Timestamp;
 import feign.FeignException;
 import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.CollectorClient;
 import ru.practicum.common.ConflictException;
 import ru.practicum.common.NotFoundException;
 import ru.practicum.dto.event.EventFullDto;
@@ -15,12 +17,15 @@ import ru.practicum.dto.request.RequestStatus;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.feign.client.EventClient;
 import ru.practicum.feign.client.UserClient;
+import ru.practicum.grpc.stats.actions.ActionTypeProto;
+import ru.practicum.grpc.stats.actions.UserActionProto;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.model.Request;
 import ru.practicum.repository.RequestRepository;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +39,7 @@ public class RequestServiceImpl implements RequestService {
     private final EventClient eventClient;
     private final RequestMapper requestMapper;
     private final EventMapper eventMapper;
+    private final CollectorClient collectorClient;
 
     @Override
     public List<RequestDto> getRequests(long userId) {
@@ -96,6 +102,7 @@ public class RequestServiceImpl implements RequestService {
 
         RequestDto saved = requestMapper.toDto(requestRepository.save(eventRequest));
         log.info("Request created successfully: {}", saved);
+        collectorClient.sendUserAction(createUserAction(eventId, userId, ActionTypeProto.ACTION_REGISTER, Instant.now()));
         return saved;
     }
 
@@ -239,4 +246,15 @@ public class RequestServiceImpl implements RequestService {
                 .collect(Collectors.toList());
     }
 
+    private UserActionProto createUserAction(Long eventId, Long userId, ActionTypeProto type, Instant timestamp) {
+        return UserActionProto.newBuilder()
+                .setUserId(userId)
+                .setEventId(eventId)
+                .setActionType(type)
+                .setTimestamp(Timestamp.newBuilder()
+                        .setSeconds(timestamp.getEpochSecond())
+                        .setNanos(timestamp.getNano())
+                        .build())
+                .build();
+    }
 }
