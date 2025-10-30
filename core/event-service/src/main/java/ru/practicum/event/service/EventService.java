@@ -1,6 +1,5 @@
 package ru.practicum.event.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.event.*;
@@ -25,13 +24,12 @@ public interface EventService {
 
     List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                        Boolean onlyAvailable, String sort, int from, int size,
-                                        HttpServletRequest request);
+                                        Boolean onlyAvailable, String sort, int from, int size);
 
-    EventFullDto getPublicEvent(Long id, HttpServletRequest request);
+    EventFullDto getPublicEvent(Long id);
 
     @Transactional
-    EventFullDto getPublicEventForFeign(Long id, HttpServletRequest request);
+    EventFullDto getPublicEventForFeign(Long id);
 
     List<EventFullDto> getAllEvents(List<Long> users, List<String> states, List<Long> categories,
                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size);
@@ -42,4 +40,8 @@ public interface EventService {
 
     @Transactional
     void updateConfirmedRequests(Long eventId, int countDelta);
+
+    List<EventRecommendationDto> getRecommendations(long userId);
+
+    void addLike(Long eventId, Long userId);
 }
